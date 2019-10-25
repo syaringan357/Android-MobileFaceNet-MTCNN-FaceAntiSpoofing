@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zwp.mobilefacenet.mobilefacenet.MobileFaceNet;
+import com.zwp.mobilefacenet.mtcnn.Align;
 import com.zwp.mobilefacenet.mtcnn.Box;
 import com.zwp.mobilefacenet.mtcnn.MTCNN;
 import com.zwp.mobilefacenet.mtcnn.Utils;
@@ -19,6 +20,9 @@ import com.zwp.mobilefacenet.mtcnn.Utils;
 import java.util.Vector;
 
 public class MainActivity extends AppCompatActivity {
+    // 最小检测人脸，这个参数在PNet中决定缩放的次数，所以在自己项目中配置好这个参数将将有助于缩减检测时间
+    public static final int MIN_SIZE = 40;
+
     private MTCNN mtcnn; // 人脸检测
     private MobileFaceNet mfn; // 人脸比对
 
@@ -74,29 +78,50 @@ public class MainActivity extends AppCompatActivity {
      */
     private void faceCrop() {
         // 检测出人脸数据
-        Vector<Box> boxes1 = mtcnn.detectFaces(bitmap1, 40);
-        Vector<Box> boxes2 = mtcnn.detectFaces(bitmap2, 40);
-
+        Vector<Box> boxes1 = mtcnn.detectFaces(bitmap1, MIN_SIZE);
+        Vector<Box> boxes2 = mtcnn.detectFaces(bitmap2, MIN_SIZE);
         if (boxes1.size() == 0 || boxes2.size() == 0) {
             Toast.makeText(MainActivity.this, "未检测到人脸", Toast.LENGTH_LONG).show();
             return;
         }
-
         // 这里因为使用的每张照片里只有一张人脸，所以取第一个值，用来剪裁人脸
-        Rect rect1 = boxes1.get(0).transform2Rect();
-        Rect rect2 = boxes2.get(0).transform2Rect();
+        Box box1 = boxes1.get(0);
+        Box box2 = boxes2.get(0);
 
-        // 扩充24像素，把头发耳朵下巴啥的包括进来（估计是这个意思吧，因为这个MTCNN是人脸五点检测，眼睛，鼻子，嘴两边）
-        int margin = 24;
-        Utils.rectExtend(bitmap1, rect1, margin);
-        Utils.rectExtend(bitmap2, rect2, margin);
+        // 人脸对齐
+        bitmap1 = Align.warpAffine(bitmap1, box1.landmark);
+        bitmap2 = Align.warpAffine(bitmap2, box2.landmark);
 
-        // 裁剪出人脸
-        bitmap1 = Utils.crop(bitmap1, rect1);
-        bitmap2 = Utils.crop(bitmap2, rect2);
+        // 重新检测对齐后的人脸数据
+        boxes1 = mtcnn.detectFaces(bitmap1, MIN_SIZE);
+        boxes2 = mtcnn.detectFaces(bitmap2, MIN_SIZE);
+        if (boxes1.size() == 0 || boxes2.size() == 0) {
+            Toast.makeText(MainActivity.this, "未检测到人脸", Toast.LENGTH_LONG).show();
+            return;
+        }
+        box1 = boxes1.get(0);
+        box2 = boxes2.get(0);
+
+        // 剪裁人脸
+        bitmap1 = crop(bitmap1, box1);
+        bitmap2 = crop(bitmap2, box2);
 
         imageViewCrop1.setImageBitmap(bitmap1);
         imageViewCrop2.setImageBitmap(bitmap2);
+    }
+
+    private Bitmap crop(Bitmap bitmap, Box box) {
+        Rect rect = box.transform2Rect();
+
+        // 将rect扩充44像素，把整个头包进来（估计是这个意思吧，因为这个MTCNN是人脸五点检测，眼睛，鼻子，嘴两边）
+        // 这里根据比例重新计算了扩充的像素
+        int margin = 44;
+        int marginX = Math.round(((float) (rect.right - rect.left)) / MobileFaceNet.INPUT_IMAGE_SIZE * margin);
+        int marginY = Math.round(((float) (rect.bottom - rect.top)) / MobileFaceNet.INPUT_IMAGE_SIZE * margin);
+        MyUtil.rectExtend(bitmap, rect, marginX, marginY);
+
+        // 裁剪出人脸
+        return Utils.crop(bitmap, rect);
     }
 
     /**

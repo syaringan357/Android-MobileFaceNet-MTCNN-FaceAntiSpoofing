@@ -13,7 +13,7 @@ public class MobileFaceNet {
     private static final String INPUT_NAME = "input:0";
     private static final String OUTPUT_NAME = "embeddings:0";
 
-    private static final int INPUT_IMAGE_SIZE = 112; // 需要feed数据的placeholder的图片宽高
+    public static final int INPUT_IMAGE_SIZE = 112; // 需要feed数据的placeholder的图片宽高
     private static final int EMBEDDING_SIZE = 128; // 输出的embedding维度
     public static final float THRESHOLD = 0.8f; // 设置一个阙值，大于这个值认为是同一个人
 
@@ -31,8 +31,8 @@ public class MobileFaceNet {
 
     public float compare(Bitmap bitmap1, Bitmap bitmap2) {
         // 将人脸resize为112X112大小的，因为下面需要feed数据的placeholder的形状是(?, 112, 112, 3)
-        bitmap1 = Bitmap.createScaledBitmap(bitmap1, INPUT_IMAGE_SIZE, INPUT_IMAGE_SIZE, false);
-        bitmap2 = Bitmap.createScaledBitmap(bitmap2, INPUT_IMAGE_SIZE, INPUT_IMAGE_SIZE, false);
+        bitmap1 = Bitmap.createScaledBitmap(bitmap1, INPUT_IMAGE_SIZE, INPUT_IMAGE_SIZE, true);
+        bitmap2 = Bitmap.createScaledBitmap(bitmap2, INPUT_IMAGE_SIZE, INPUT_IMAGE_SIZE, true);
 
         float[] datasets = getTwoImageDatasets(bitmap1, bitmap2);
         tii.feed(INPUT_NAME, datasets, 2, INPUT_IMAGE_SIZE, INPUT_IMAGE_SIZE, 3);
