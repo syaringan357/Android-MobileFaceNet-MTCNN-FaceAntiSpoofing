@@ -3,7 +3,6 @@ package com.zwp.mobilefacenet.mtcnn;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
-import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Log;
 

@@ -17,6 +17,7 @@ import com.zwp.mobilefacenet.mtcnn.Box;
 import com.zwp.mobilefacenet.mtcnn.MTCNN;
 import com.zwp.mobilefacenet.mtcnn.Utils;
 
+import java.io.IOException;
 import java.util.Vector;
 
 public class MainActivity extends AppCompatActivity {
@@ -49,7 +50,11 @@ public class MainActivity extends AppCompatActivity {
         resultTextView = findViewById(R.id.result_text_view);
 
         mtcnn = new MTCNN(getAssets());
-        mfn = new MobileFaceNet(getAssets());
+        try {
+            mfn = new MobileFaceNet(getAssets());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         initImage();
         cropBtn.setOnClickListener(new View.OnClickListener() {
@@ -129,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void faceCompare() {
         float same = mfn.compare(bitmap1, bitmap2);
-        String text = "比对结果：" + String.valueOf(same);
+        String text = "比对结果：" + same;
         if (same > MobileFaceNet.THRESHOLD) {
             text = text + "，" + "True";
             resultTextView.setText(text);
