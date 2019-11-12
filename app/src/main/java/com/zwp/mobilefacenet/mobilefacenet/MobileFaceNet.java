@@ -16,7 +16,6 @@ public class MobileFaceNet {
     private static final String MODEL_FILE = "MobileFaceNet.tflite";
 
     public static final int INPUT_IMAGE_SIZE = 112; // 需要feed数据的placeholder的图片宽高
-    private static final int EMBEDDING_SIZE = 192; // 输出的embedding维度
     public static final float THRESHOLD = 0.92f; // 设置一个阙值，大于这个值认为是同一个人
 
     private Interpreter interpreter;
@@ -31,7 +30,7 @@ public class MobileFaceNet {
         bitmap2 = Bitmap.createScaledBitmap(bitmap2, INPUT_IMAGE_SIZE, INPUT_IMAGE_SIZE, true);
 
         float[][][][] datasets = getTwoImageDatasets(bitmap1, bitmap2);
-        float[][] embeddings = new float[2][EMBEDDING_SIZE];
+        float[][] embeddings = new float[2][192];
         interpreter.run(datasets, embeddings);
         return evaluate(embeddings);
     }
@@ -45,7 +44,7 @@ public class MobileFaceNet {
         float[] embeddings1 = embeddings[0];
         float[] embeddings2 = embeddings[1];
         float dist = 0;
-        for (int i = 0; i < EMBEDDING_SIZE; i++) {
+        for (int i = 0; i < 192; i++) {
             dist += Math.pow(embeddings1[i] - embeddings2[i], 2);
         }
         float same = 0;

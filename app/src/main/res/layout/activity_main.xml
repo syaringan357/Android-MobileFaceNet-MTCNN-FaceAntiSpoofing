@@ -48,21 +48,37 @@
             android:layout_margin="10dp"/>
     </LinearLayout>
 
-    <Button
-        android:id="@+id/crop_btn"
-        android:layout_width="100dp"
-        android:layout_height="48dp"
-        android:layout_margin="10dp"
-        android:layout_gravity="center_horizontal"
-        android:text="人脸检测"/>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center_horizontal">
 
-    <Button
-        android:id="@+id/compare_btn"
-        android:layout_width="100dp"
-        android:layout_height="48dp"
-        android:layout_margin="10dp"
-        android:layout_gravity="center_horizontal"
-        android:text="人脸比对"/>
+        <Button
+            android:id="@+id/crop_btn"
+            android:layout_width="100dp"
+            android:layout_height="48dp"
+            android:layout_margin="10dp"
+            android:layout_gravity="center_horizontal"
+            android:text="人脸检测"/>
+
+        <Button
+            android:id="@+id/de_spoofing_btn"
+            android:layout_width="100dp"
+            android:layout_height="48dp"
+            android:layout_margin="10dp"
+            android:layout_gravity="center_horizontal"
+            android:text="活体检测"/>
+
+        <Button
+            android:id="@+id/compare_btn"
+            android:layout_width="100dp"
+            android:layout_height="48dp"
+            android:layout_margin="10dp"
+            android:layout_gravity="center_horizontal"
+            android:text="人脸比对"/>
+    </LinearLayout>
+
 
     <TextView
         android:id="@+id/result_text_view"

@@ -11,10 +11,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.zwp.mobilefacenet.facedespoofing.FaceDeSpoofing;
 import com.zwp.mobilefacenet.mobilefacenet.MobileFaceNet;
 import com.zwp.mobilefacenet.mtcnn.Box;
 import com.zwp.mobilefacenet.mtcnn.MTCNN;
-import com.zwp.mobilefacenet.mtcnn.Utils;
 
 import java.io.IOException;
 import java.util.Vector;
@@ -22,6 +22,7 @@ import java.util.Vector;
 public class MainActivity extends AppCompatActivity {
 
     private MTCNN mtcnn; // 人脸检测
+    private FaceDeSpoofing fds; // 活体检测
     private MobileFaceNet mfn; // 人脸比对
 
     private Bitmap bitmap1;
@@ -43,11 +44,13 @@ public class MainActivity extends AppCompatActivity {
         imageViewCrop1 = findViewById(R.id.image_view_crop1);
         imageViewCrop2 = findViewById(R.id.image_view_crop2);
         Button cropBtn = findViewById(R.id.crop_btn);
+        Button deSpoofingBtn = findViewById(R.id.de_spoofing_btn);
         Button compareBtn = findViewById(R.id.compare_btn);
         resultTextView = findViewById(R.id.result_text_view);
 
         try {
             mtcnn = new MTCNN(getAssets());
+            fds = new FaceDeSpoofing(getAssets());
             mfn = new MobileFaceNet(getAssets());
         } catch (IOException e) {
             e.printStackTrace();
@@ -58,6 +61,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 faceCrop();
+            }
+        });
+        deSpoofingBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deSpoofing();
             }
         });
         compareBtn.setOnClickListener(new View.OnClickListener() {
@@ -130,7 +139,34 @@ public class MainActivity extends AppCompatActivity {
         MyUtil.rectExtend(bitmap, rect, marginX, marginY);
 
         // 裁剪出人脸
-        return Utils.crop(bitmap, rect);
+        return MyUtil.crop(bitmap, rect);
+    }
+
+    /**
+     * 活体检测
+     */
+    private void deSpoofing() {
+        long start = System.currentTimeMillis();
+        float score1 = fds.deSpoofing(bitmap1);
+        long end = System.currentTimeMillis();
+        float score2 = fds.deSpoofing(bitmap2);
+
+        String text = "活体检测结果：\n";
+        text = text + "left " + score1;
+        if (score1 < FaceDeSpoofing.THRESHOLD) {
+            text = text + "，" + "True";
+        } else {
+            text = text + "，" + "False";
+        }
+
+        text = text + "。right " + score2;
+        if (score2 < FaceDeSpoofing.THRESHOLD) {
+            text = text + "，" + "True";
+        } else {
+            text = text + "，" + "False";
+        }
+        text = text + "。耗时" + (end - start);
+        resultTextView.setText(text);
     }
 
     /**
@@ -141,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
         float same = mfn.compare(bitmap1, bitmap2);
         long end = System.currentTimeMillis();
 
-        String text = "比对结果：" + same;
+        String text = "人脸比对结果：" + same;
         if (same > MobileFaceNet.THRESHOLD) {
             text = text + "，" + "True";
             resultTextView.setTextColor(getResources().getColor(android.R.color.holo_green_light));

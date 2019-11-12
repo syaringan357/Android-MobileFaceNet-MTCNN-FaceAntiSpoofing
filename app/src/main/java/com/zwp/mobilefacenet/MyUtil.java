@@ -72,7 +72,7 @@ public class MyUtil {
     }
 
     /**
-     * 归一化图片
+     * 归一化图片到[-1, 1]
      * @param bitmap
      * @return
      */
@@ -170,5 +170,16 @@ public class MyUtil {
                 bitmap, rect.left, rect.top, Math.round(rect.width()), Math.round(box.height()), matrix, true);
 
         return normalizeImage(croped);
+    }
+
+    /**
+     * 按照rect的大小裁剪出人脸
+     * @param bitmap
+     * @param rect
+     * @return
+     */
+    public static Bitmap crop(Bitmap bitmap, Rect rect) {
+        Bitmap cropped = Bitmap.createBitmap(bitmap, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+        return cropped;
     }
 }

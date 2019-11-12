@@ -123,7 +123,7 @@ public class MTCNN {
         // BBR
         BoundingBoxReggression(totalBoxes);
 
-        return Utils.updateBoxes(totalBoxes);
+        return updateBoxes(totalBoxes);
     }
 
     /**
@@ -250,7 +250,7 @@ public class MTCNN {
         // Nms
         nms(boxes, 0.7f, "Union");
         BoundingBoxReggression(boxes);
-        return Utils.updateBoxes(boxes);
+        return updateBoxes(boxes);
     }
 
     /**
@@ -304,7 +304,7 @@ public class MTCNN {
         BoundingBoxReggression(boxes);
         // Nms
         nms(boxes, 0.7f, "Min");
-        return Utils.updateBoxes(boxes);
+        return updateBoxes(boxes);
     }
 
     /**
@@ -337,5 +337,20 @@ public class MTCNN {
                 boxes.get(i).landmark[j] = conv6_3_conv6_3[i][j];
             }
         }
+    }
+
+    /**
+     * 删除做了delete标记的box
+     * @param boxes
+     * @return
+     */
+    public static Vector<Box> updateBoxes(Vector<Box> boxes) {
+        Vector<Box> b = new Vector<>();
+        for (int i = 0; i < boxes.size(); i++) {
+            if (!boxes.get(i).deleted) {
+                b.addElement(boxes.get(i));
+            }
+        }
+        return b;
     }
 }
