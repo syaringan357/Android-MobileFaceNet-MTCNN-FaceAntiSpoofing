@@ -14,7 +14,7 @@ https://github.com/sirius-ai/MobileFaceNet_TF
 Use this model for face comparison on mobile phones because it is very small.  
   
 # USING
-After putting .tflite in your assets directory, remember to add it to your gradle:  
+After putting .tflite in your assets directory, remember to add this code to your gradle:  
 aaptOptions {  
   noCompress "tflite"  
 }  
