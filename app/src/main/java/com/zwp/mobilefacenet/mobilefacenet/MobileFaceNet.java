@@ -16,7 +16,7 @@ public class MobileFaceNet {
     private static final String MODEL_FILE = "MobileFaceNet.tflite";
 
     public static final int INPUT_IMAGE_SIZE = 112; // 需要feed数据的placeholder的图片宽高
-    public static final float THRESHOLD = 0.92f; // 设置一个阙值，大于这个值认为是同一个人
+    public static final float THRESHOLD = 0.8f; // 设置一个阙值，大于这个值认为是同一个人
 
     private Interpreter interpreter;
 
@@ -26,12 +26,13 @@ public class MobileFaceNet {
 
     public float compare(Bitmap bitmap1, Bitmap bitmap2) {
         // 将人脸resize为112X112大小的，因为下面需要feed数据的placeholder的形状是(2, 112, 112, 3)
-        bitmap1 = Bitmap.createScaledBitmap(bitmap1, INPUT_IMAGE_SIZE, INPUT_IMAGE_SIZE, true);
-        bitmap2 = Bitmap.createScaledBitmap(bitmap2, INPUT_IMAGE_SIZE, INPUT_IMAGE_SIZE, true);
+        Bitmap bitmapScale1 = Bitmap.createScaledBitmap(bitmap1, INPUT_IMAGE_SIZE, INPUT_IMAGE_SIZE, true);
+        Bitmap bitmapScale2 = Bitmap.createScaledBitmap(bitmap2, INPUT_IMAGE_SIZE, INPUT_IMAGE_SIZE, true);
 
-        float[][][][] datasets = getTwoImageDatasets(bitmap1, bitmap2);
+        float[][][][] datasets = getTwoImageDatasets(bitmapScale1, bitmapScale2);
         float[][] embeddings = new float[2][192];
         interpreter.run(datasets, embeddings);
+        MyUtil.l2Normalize(embeddings, 1e-10);
         return evaluate(embeddings);
     }
 
@@ -49,7 +50,7 @@ public class MobileFaceNet {
         }
         float same = 0;
         for (int i = 0; i < 400; i++) {
-            float threshold = 100 * (i + 1);
+            float threshold = 0.01f * (i + 1);
             if (dist < threshold) {
                 same += 1.0 / 400;
             }

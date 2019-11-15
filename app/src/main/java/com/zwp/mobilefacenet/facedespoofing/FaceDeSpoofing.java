@@ -14,7 +14,7 @@ public class FaceDeSpoofing {
     private static final String MODEL_FILE = "FaceDeSpoofing.tflite";
 
     public static final int INPUT_IMAGE_SIZE = 256; // 需要feed数据的placeholder的图片宽高
-    public static final float THRESHOLD = 0.5f; // 设置一个阙值，小于这个值认为是真人
+    public static final float THRESHOLD = 0.5f; // 设置一个阙值，大于这个值认为是攻击
 
     private Interpreter interpreter;
 
@@ -29,34 +29,23 @@ public class FaceDeSpoofing {
      */
     public float deSpoofing(Bitmap bitmap) {
         // 将人脸resize为256X256大小的，因为下面需要feed数据的placeholder的形状是(1, 256, 256, 3)
-        bitmap = Bitmap.createScaledBitmap(bitmap, INPUT_IMAGE_SIZE, INPUT_IMAGE_SIZE, true);
+        Bitmap bitmapScale = Bitmap.createScaledBitmap(bitmap, INPUT_IMAGE_SIZE, INPUT_IMAGE_SIZE, true);
 
-        float[][][] img = normalizeImage(bitmap);
-        float[][][][] data = new float[1][][][];
-        data[0] = img;
-        float[][][][] out = new float[1][32][32][1];
-        interpreter.run(data, out);
+        float[][][] img = normalizeImage(bitmapScale);
+        float[][][][] input = new float[1][][][];
+        input[0] = img;
+        float[][][][] score_fir = new float[1][32][32][1];
+        interpreter.run(input, score_fir);
 
-        float sum = 0;
+        float sum1 = 0;
         for (int i = 0; i < 32; i++) {
+            float sum2 = 0;
             for (int j = 0; j < 32; j++) {
-                sum += out[0][i][j][0];
+                sum2 += Math.pow(score_fir[0][i][j][0], 2);
             }
+            sum1 += sum2 / 32;
         }
-
-
-//        System.out.println("[" + img.length + ", " + img[0].length + ", " + img[0][0].length + "]");
-//        for (int i = 0; i < INPUT_IMAGE_SIZE; i++) {
-//            for (int j = 0; j < INPUT_IMAGE_SIZE; j++) {
-//                System.out.println(img[i][j][0] + " " + img[i][j][1] + " " + img[i][j][2] + " " +
-//                        img[i][j][3] + " " + img[i][j][4] + " " + img[i][j][5] + " ");
-//
-//            }
-//            break;
-//        }
-
-
-        return sum / 32 / 32;
+        return sum1 / 32;
     }
 
     /**

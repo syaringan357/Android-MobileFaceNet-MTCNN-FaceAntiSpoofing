@@ -182,4 +182,23 @@ public class MyUtil {
         Bitmap cropped = Bitmap.createBitmap(bitmap, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
         return cropped;
     }
+
+    /**
+     * l2正则化
+     * @param embeddings
+     * @param epsilon 惩罚项
+     * @return
+     */
+    public static void l2Normalize(float[][] embeddings, double epsilon) {
+        for (int i = 0; i < embeddings.length; i++) {
+            float squareSum = 0;
+            for (int j = 0; j < embeddings[i].length; j++) {
+                squareSum += Math.pow(embeddings[i][j], 2);
+            }
+            float xInvNorm = (float) Math.sqrt(Math.max(squareSum, epsilon));
+            for (int j = 0; j < embeddings[i].length; j++) {
+                embeddings[i][j] = embeddings[i][j] / xInvNorm;
+            }
+        }
+    }
 }
