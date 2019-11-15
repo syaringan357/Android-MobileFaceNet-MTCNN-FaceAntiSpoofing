@@ -14,7 +14,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.graphics.Rect;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
@@ -33,8 +32,6 @@ import com.zwp.mobilefacenet.mobilefacenet.MobileFaceNet;
 import com.zwp.mobilefacenet.mtcnn.Box;
 import com.zwp.mobilefacenet.mtcnn.MTCNN;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -140,25 +137,11 @@ public class MainActivity extends AppCompatActivity {
         Box box2 = boxes2.get(0);
 
         // 剪裁人脸
-        bitmapCrop1 = crop(bitmapTemp1, box1);
-        bitmapCrop2 = crop(bitmapTemp2, box2);
+        bitmapCrop1 = MyUtil.crop(bitmapTemp1, box1.transform2Rect());
+        bitmapCrop2 = MyUtil.crop(bitmapTemp2, box2.transform2Rect());
 
         imageViewCrop1.setImageBitmap(bitmapCrop1);
         imageViewCrop2.setImageBitmap(bitmapCrop2);
-    }
-
-    private Bitmap crop(Bitmap bitmap, Box box) {
-        Rect rect = box.transform2Rect();
-
-        // 将rect扩充44像素，把整个头包进来（估计是这个意思吧，因为这个MTCNN是人脸五点检测，眼睛，鼻子，嘴两边）
-        // 这里根据比例重新计算了扩充的像素
-        int margin = 20;
-        int marginX = Math.round(((float) (rect.right - rect.left)) / MobileFaceNet.INPUT_IMAGE_SIZE * margin);
-        int marginY = Math.round(((float) (rect.bottom - rect.top)) / MobileFaceNet.INPUT_IMAGE_SIZE * margin);
-        MyUtil.rectExtend(bitmap, rect, marginX, marginY);
-
-        // 裁剪出人脸
-        return MyUtil.crop(bitmap, rect);
     }
 
     /**
