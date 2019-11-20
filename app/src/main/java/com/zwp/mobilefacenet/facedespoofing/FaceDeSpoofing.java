@@ -9,12 +9,14 @@ import com.zwp.mobilefacenet.MyUtil;
 import org.tensorflow.lite.Interpreter;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FaceDeSpoofing {
     private static final String MODEL_FILE = "FaceDeSpoofing.tflite";
 
     public static final int INPUT_IMAGE_SIZE = 256; // 需要feed数据的placeholder的图片宽高
-    public static final float THRESHOLD = 0.5f; // 设置一个阙值，大于这个值认为是攻击
+    public static final float THRESHOLD = 0; // 设置一个阙值，大于这个值认为是攻击
 
     private Interpreter interpreter;
 
@@ -34,18 +36,36 @@ public class FaceDeSpoofing {
         float[][][] img = normalizeImage(bitmapScale);
         float[][][][] input = new float[1][][][];
         input[0] = img;
-        float[][][][] score_fir = new float[1][32][32][1];
-        interpreter.run(input, score_fir);
+        float[][][][] conv11_fir = new float[1][32][32][1];
+        float[][][][] conv11 = new float[1][32][32][1];
+        float[][][][] conv11_new = new float[1][32][32][1];
 
-        float sum1 = 0;
+        Map<Integer, Object> outputs = new HashMap<>();
+        outputs.put(interpreter.getOutputIndex("conv11_fir"), conv11_fir);
+        outputs.put(interpreter.getOutputIndex("conv11"), conv11);
+        outputs.put(interpreter.getOutputIndex("conv11_new"), conv11_new);
+        interpreter.runForMultipleInputsOutputs(new Object[]{input}, outputs);
+
+        float sum1_0 = 0;
+        float sum1_1 = 0;
+        float sum1_2 = 0;
         for (int i = 0; i < 32; i++) {
-            float sum2 = 0;
+            float sum2_0 = 0;
+            float sum2_1 = 0;
+            float sum2_2 = 0;
             for (int j = 0; j < 32; j++) {
-                sum2 += Math.pow(score_fir[0][i][j][0], 2);
+                sum2_0 += conv11_fir[0][i][j][0];
+                sum2_1 += conv11[0][i][j][0];
+                sum2_2 += conv11_new[0][i][j][0];
             }
-            sum1 += sum2 / 32;
+            sum1_0 += sum2_0 / 32;
+            sum1_1 += sum2_1 / 32;
+            sum1_2 += sum2_2 / 32;
         }
-        return sum1 / 32;
+        float sum0 = sum1_0 / 32;
+        float sum1 = sum1_1 / 32;
+        float sum2 = sum1_2 / 32;
+        return sum0 - sum1 - sum2;
     }
 
     /**
