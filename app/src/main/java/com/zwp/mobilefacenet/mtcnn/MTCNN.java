@@ -2,6 +2,7 @@ package com.zwp.mobilefacenet.mtcnn;
 
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 
 import com.zwp.mobilefacenet.MyUtil;
 
@@ -160,10 +161,10 @@ public class MTCNN {
                     // core
                     box.score = score;
                     // box
-                    box.box[0] = x * 2 / scale;
-                    box.box[1] = y * 2 / scale;
-                    box.box[2] = (x * 2 + 11) / scale;
-                    box.box[3] = (y * 2 + 11) / scale;
+                    box.box[0] = Math.round(x * 2 / scale);
+                    box.box[1] = Math.round(y * 2 / scale);
+                    box.box[2] = Math.round((x * 2 + 11) / scale);
+                    box.box[3] = Math.round((y * 2 + 11) / scale);
                     // bbr
                     for (int i = 0; i < 4; i++) {
                         box.bbr[i] = conv4_2_BiasAdd[0][y][x][i];
@@ -193,12 +194,12 @@ public class MTCNN {
                 for (int j = i + 1; j < boxes.size(); j++) {
                     Box box2 = boxes.get(j);
                     if (!box2.deleted) {
-                        float x1 = Math.max(box.box[0], box2.box[0]);
-                        float y1 = Math.max(box.box[1], box2.box[1]);
-                        float x2 = Math.min(box.box[2], box2.box[2]);
-                        float y2 = Math.min(box.box[3], box2.box[3]);
+                        int x1 = Math.max(box.box[0], box2.box[0]);
+                        int y1 = Math.max(box.box[1], box2.box[1]);
+                        int x2 = Math.min(box.box[2], box2.box[2]);
+                        int y2 = Math.min(box.box[3], box2.box[3]);
                         if (x2 < x1 || y2 < y1) continue;
-                        float areaIoU = (x2 - x1 + 1) * (y2 - y1 + 1);
+                        int areaIoU = (x2 - x1 + 1) * (y2 - y1 + 1);
                         float iou = 0f;
                         if (method.equals("Union"))
                             iou = 1.0f * areaIoU / (box.area() + box2.area() - areaIoU);
@@ -333,8 +334,10 @@ public class MTCNN {
                 boxes.get(i).bbr[j] = conv6_2_conv6_2[i][j];
             }
             // landmark
-            for (int j = 0; j < 10; j++) {
-                boxes.get(i).landmark[j] = conv6_3_conv6_3[i][j];
+            for (int j = 0; j < 5; j++) {
+                int x = Math.round(boxes.get(i).left() + (conv6_3_conv6_3[i][j] * boxes.get(i).width()));
+                int y = Math.round(boxes.get(i).top() + (conv6_3_conv6_3[i][j + 5] * boxes.get(i).height()));
+                boxes.get(i).landmark[j] = new Point(x, y);
             }
         }
     }

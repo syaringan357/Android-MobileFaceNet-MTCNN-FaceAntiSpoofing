@@ -31,6 +31,7 @@ import com.zwp.mobilefacenet.facedespoofing.FaceDeSpoofing;
 import com.zwp.mobilefacenet.mobilefacenet.MobileFaceNet;
 import com.zwp.mobilefacenet.mtcnn.Box;
 import com.zwp.mobilefacenet.mtcnn.MTCNN;
+import com.zwp.mobilefacenet.mtcnn.Utils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -139,6 +140,10 @@ public class MainActivity extends AppCompatActivity {
         // 剪裁人脸
         bitmapCrop1 = MyUtil.crop(bitmapTemp1, box1.transform2Rect());
         bitmapCrop2 = MyUtil.crop(bitmapTemp2, box2.transform2Rect());
+
+        // 绘制人脸框和五点
+//        Utils.drawBox(bitmapTemp1, box1, 10);
+//        Utils.drawBox(bitmapTemp2, box2, 10);
 
         imageViewCrop1.setImageBitmap(bitmapCrop1);
         imageViewCrop2.setImageBitmap(bitmapCrop2);
