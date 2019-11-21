@@ -37,9 +37,11 @@ public class MTCNN {
     private Interpreter oInterpreter;
 
     public MTCNN(AssetManager assetManager) throws IOException {
-        pInterpreter = new Interpreter(MyUtil.loadModelFile(assetManager, MODEL_FILE_PNET), new Interpreter.Options());
-        rInterpreter = new Interpreter(MyUtil.loadModelFile(assetManager, MODEL_FILE_RNET), new Interpreter.Options());
-        oInterpreter = new Interpreter(MyUtil.loadModelFile(assetManager, MODEL_FILE_ONET), new Interpreter.Options());
+        Interpreter.Options options = new Interpreter.Options();
+        options.setNumThreads(4);
+        pInterpreter = new Interpreter(MyUtil.loadModelFile(assetManager, MODEL_FILE_PNET), options);
+        rInterpreter = new Interpreter(MyUtil.loadModelFile(assetManager, MODEL_FILE_RNET), options);
+        oInterpreter = new Interpreter(MyUtil.loadModelFile(assetManager, MODEL_FILE_ONET), options);
     }
 
     /**

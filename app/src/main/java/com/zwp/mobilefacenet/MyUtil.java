@@ -168,7 +168,7 @@ public class MyUtil {
         matrix.postScale(scaleW, scaleH);
         Rect rect = box.transform2Rect();
         Bitmap croped = Bitmap.createBitmap(
-                bitmap, rect.left, rect.top, Math.round(box.width()), Math.round(box.height()), matrix, true);
+                bitmap, rect.left, rect.top, box.width(), box.height(), matrix, true);
 
         return normalizeImage(croped);
     }

@@ -16,12 +16,14 @@ public class FaceDeSpoofing {
     private static final String MODEL_FILE = "FaceDeSpoofing.tflite";
 
     public static final int INPUT_IMAGE_SIZE = 256; // 需要feed数据的placeholder的图片宽高
-    public static final float THRESHOLD = 0; // 设置一个阙值，大于这个值认为是攻击
+    public static final float THRESHOLD = -0.2f; // 设置一个阙值，大于这个值认为是攻击
 
     private Interpreter interpreter;
 
     public FaceDeSpoofing(AssetManager assetManager) throws IOException {
-        interpreter = new Interpreter(MyUtil.loadModelFile(assetManager, MODEL_FILE), new Interpreter.Options());
+        Interpreter.Options options = new Interpreter.Options();
+        options.setNumThreads(4);
+        interpreter = new Interpreter(MyUtil.loadModelFile(assetManager, MODEL_FILE), options);
     }
 
     /**

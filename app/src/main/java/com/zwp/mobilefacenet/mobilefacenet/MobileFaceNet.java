@@ -21,7 +21,9 @@ public class MobileFaceNet {
     private Interpreter interpreter;
 
     public MobileFaceNet(AssetManager assetManager) throws IOException {
-        interpreter = new Interpreter(MyUtil.loadModelFile(assetManager, MODEL_FILE), new Interpreter.Options());
+        Interpreter.Options options = new Interpreter.Options();
+        options.setNumThreads(4);
+        interpreter = new Interpreter(MyUtil.loadModelFile(assetManager, MODEL_FILE), options);
     }
 
     public float compare(Bitmap bitmap1, Bitmap bitmap2) {
