@@ -14,7 +14,9 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.media.ExifInterface;
+import androidx.exifinterface.media.ExifInterface;
+
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,11 +29,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.zwp.mobilefacenet.facedespoofing.FaceDeSpoofing;
+import com.zwp.mobilefacenet.faceantispoofing.FaceAntiSpoofing;
 import com.zwp.mobilefacenet.mobilefacenet.MobileFaceNet;
 import com.zwp.mobilefacenet.mtcnn.Box;
 import com.zwp.mobilefacenet.mtcnn.MTCNN;
-import com.zwp.mobilefacenet.mtcnn.Utils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -43,7 +44,7 @@ import java.util.Vector;
 public class MainActivity extends AppCompatActivity {
 
     private MTCNN mtcnn; // 人脸检测
-    private FaceDeSpoofing fds; // 活体检测
+    private FaceAntiSpoofing fas; // 活体检测
     private MobileFaceNet mfn; // 人脸比对
 
     private Bitmap bitmap1;
@@ -75,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             mtcnn = new MTCNN(getAssets());
-            fds = new FaceDeSpoofing(getAssets());
+            fas = new FaceAntiSpoofing(getAssets());
             mfn = new MobileFaceNet(getAssets());
         } catch (IOException e) {
             e.printStackTrace();
@@ -91,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
         deSpoofingBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deSpoofing();
+                antiSpoofing();
             }
         });
         compareBtn.setOnClickListener(new View.OnClickListener() {
@@ -137,9 +138,15 @@ public class MainActivity extends AppCompatActivity {
         Box box1 = boxes1.get(0);
         Box box2 = boxes2.get(0);
 
+        // 增加margin
+        Rect rect1 = box1.transform2Rect();
+        Rect rect2 = box2.transform2Rect();
+        MyUtil.rectExtend(bitmapTemp1, rect1, MTCNN.MARGIN, MTCNN.MARGIN);
+        MyUtil.rectExtend(bitmapTemp1, rect2, MTCNN.MARGIN, MTCNN.MARGIN);
+
         // 剪裁人脸
-        bitmapCrop1 = MyUtil.crop(bitmapTemp1, box1.transform2Rect());
-        bitmapCrop2 = MyUtil.crop(bitmapTemp2, box2.transform2Rect());
+        bitmapCrop1 = MyUtil.crop(bitmapTemp1, rect1);
+        bitmapCrop2 = MyUtil.crop(bitmapTemp2, rect2);
 
         // 绘制人脸框和五点
 //        Utils.drawBox(bitmapTemp1, box1, 10);
@@ -152,19 +159,19 @@ public class MainActivity extends AppCompatActivity {
     /**
      * 活体检测
      */
-    private void deSpoofing() {
+    private void antiSpoofing() {
         if (bitmapCrop1 == null || bitmapCrop2 == null) {
             Toast.makeText(this, "请先检测人脸", Toast.LENGTH_LONG).show();
             return;
         }
 
         long start = System.currentTimeMillis();
-        float score1 = fds.deSpoofing(bitmapCrop1); // 就这一句有用代码，其他都是UI
+        float score1 = fas.antiSpoofing(bitmapCrop1); // 就这一句有用代码，其他都是UI
         long end = System.currentTimeMillis();
-        float score2 = fds.deSpoofing(bitmapCrop2); // 就这一句有用代码，其他都是UI
+        float score2 = fas.antiSpoofing(bitmapCrop2); // 就这一句有用代码，其他都是UI
 
         String text = "活体检测结果left：" + score1;
-        if (score1 < FaceDeSpoofing.THRESHOLD) {
+        if (score1 < FaceAntiSpoofing.THRESHOLD) {
             text = text + "，" + "True";
             resultTextView.setTextColor(getResources().getColor(android.R.color.holo_green_light));
         } else {
@@ -176,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         String text2 = "活体检测结果right：" + score2;
-        if (score2 < FaceDeSpoofing.THRESHOLD) {
+        if (score2 < FaceAntiSpoofing.THRESHOLD) {
             text2 = text2 + "，" + "True";
             resultTextView2.setTextColor(getResources().getColor(android.R.color.holo_green_light));
         } else {
@@ -260,7 +267,6 @@ public class MainActivity extends AppCompatActivity {
                 boolean allowAllPermission = false;
                 for (int i = 0; i < grantResults.length; i++) {
                     if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                        allowAllPermission = false;
                         break;
                     }
                     allowAllPermission = true;

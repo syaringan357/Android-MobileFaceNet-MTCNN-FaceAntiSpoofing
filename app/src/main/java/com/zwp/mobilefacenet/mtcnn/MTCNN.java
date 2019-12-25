@@ -27,6 +27,7 @@ public class MTCNN {
     public static final int IMAGE_WIDTH = 960;
     public static final int IMAGE_HEIGHT = 1280;
     public static final int MIN_SIZE = 120;
+    public static final int MARGIN = 80;
 
     private static final String MODEL_FILE_PNET = "pnet.tflite";
     private static final String MODEL_FILE_RNET = "rnet.tflite";
