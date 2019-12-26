@@ -8,6 +8,8 @@ import com.zwp.mobilefacenet.MyUtil;
 import org.tensorflow.lite.Interpreter;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FaceAntiSpoofing {
     private static final String MODEL_FILE = "FaceAntiSpoofing.tflite";
@@ -36,12 +38,16 @@ public class FaceAntiSpoofing {
         float[][][][] input = new float[1][][][];
         input[0] = img;
         float[][] clss_pred = new float[1][8];
-        interpreter.run(input, clss_pred);
+        float[][] leaf_node_mask = new float[1][8];
+        Map<Integer, Object> outputs = new HashMap<>();
+        outputs.put(interpreter.getOutputIndex("Identity"), clss_pred);
+        outputs.put(interpreter.getOutputIndex("Identity_1"), leaf_node_mask);
+        interpreter.runForMultipleInputsOutputs(new Object[]{input}, outputs);
         float score = 0;
         for (int i = 0; i < 8; i++) {
-            score += Math.pow(clss_pred[0][i], 2);
+            score += Math.abs(clss_pred[0][i]) * leaf_node_mask[0][i];
         }
-        return score / 8;
+        return score;
     }
 
     /**

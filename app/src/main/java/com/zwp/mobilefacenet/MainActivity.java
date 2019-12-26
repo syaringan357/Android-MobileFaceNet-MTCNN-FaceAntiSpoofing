@@ -152,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
 //        Utils.drawBox(bitmapTemp1, box1, 10);
 //        Utils.drawBox(bitmapTemp2, box2, 10);
 
+//        bitmapCrop2 = MyUtil.readFromAssets(this, "1.png");
         imageViewCrop1.setImageBitmap(bitmapCrop1);
         imageViewCrop2.setImageBitmap(bitmapCrop2);
     }
