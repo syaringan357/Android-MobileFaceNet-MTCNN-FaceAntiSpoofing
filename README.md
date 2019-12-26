@@ -11,7 +11,7 @@ https://github.com/jiangxiluning/facenet_mtcnn_to_mobile
 Here's how to convert .tflite.  
   
 https://github.com/yaojieliu/CVPR2019-DeepTreeLearningForZeroShotFaceAntispoofing  
-Face Anti-spoofing.  
+Face Anti-spoofing. I trained FaceAntiSpoofing.tflite, which only supports print attack and replay attack. If you have other requirements, please use this source code to retrain.  
   
 https://github.com/sirius-ai/MobileFaceNet_TF  
 Use this model for face comparison on mobile phones because it is very small.  
