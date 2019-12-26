@@ -10,7 +10,7 @@ Use the MTCNN here to convert .tflite, so that you can adapt to any shape.
 https://github.com/jiangxiluning/facenet_mtcnn_to_mobile  
 Here's how to convert .tflite.  
   
-https://github.com/yaojieliu/ECCV2018-FaceDeSpoofing  
+https://github.com/yaojieliu/CVPR2019-DeepTreeLearningForZeroShotFaceAntispoofing  
 Face Anti-spoofing.  
   
 https://github.com/sirius-ai/MobileFaceNet_TF  
