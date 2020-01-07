@@ -26,8 +26,8 @@ public class MTCNN {
     // 建议宽高和最小检测人脸，最小检测人脸这个参数在PNet中决定缩放的次数，所以在自己项目中配置好这个参数将将有助于缩减检测时间
     public static final int IMAGE_WIDTH = 960;
     public static final int IMAGE_HEIGHT = 1280;
-    public static final int MIN_SIZE = 120;
-    public static final int MARGIN = 80;
+    public static final int MIN_SIZE = 120; // 最小人脸尺寸，建议根据自己的图像比例来调节
+    public static final int MARGIN = 120; // 剪裁时扩宽的尺寸，建议根据自己的图像比例来调节
 
     private static final String MODEL_FILE_PNET = "pnet.tflite";
     private static final String MODEL_FILE_RNET = "rnet.tflite";
