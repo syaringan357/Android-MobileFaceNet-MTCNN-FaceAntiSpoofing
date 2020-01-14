@@ -27,7 +27,7 @@ public class MTCNN {
     public static final int IMAGE_WIDTH = 960;
     public static final int IMAGE_HEIGHT = 1280;
     public static final int MIN_SIZE = 120; // 最小人脸尺寸，建议根据自己的图像比例来调节
-    public static final int MARGIN = 120; // 剪裁时扩宽的尺寸，建议根据自己的图像比例来调节
+    public static final int MARGIN = 80; // 剪裁时扩宽的尺寸，建议根据自己的图像比例来调节
 
     private static final String MODEL_FILE_PNET = "pnet.tflite";
     private static final String MODEL_FILE_RNET = "rnet.tflite";

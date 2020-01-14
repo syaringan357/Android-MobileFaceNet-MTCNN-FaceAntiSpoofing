@@ -93,8 +93,8 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        Bitmap bitmapTemp1 = Bitmap.createScaledBitmap(bitmap1, MTCNN.IMAGE_WIDTH, MTCNN.IMAGE_HEIGHT, true);
-        Bitmap bitmapTemp2 = Bitmap.createScaledBitmap(bitmap2, MTCNN.IMAGE_WIDTH, MTCNN.IMAGE_HEIGHT, true);
+        Bitmap bitmapTemp1 = bitmap1.copy(bitmap1.getConfig(), false);
+        Bitmap bitmapTemp2 = bitmap2.copy(bitmap1.getConfig(), false);
 
         // 检测出人脸数据
         Vector<Box> boxes1 = null;
@@ -102,11 +102,11 @@ public class MainActivity extends AppCompatActivity {
         // 如果没检测到人脸会抛出异常
         try {
             long start = System.currentTimeMillis();
-            boxes1 = mtcnn.detectFaces(bitmapTemp1, MTCNN.MIN_SIZE); // 只有这句代码检测人脸，下面都是根据Box在图片中裁减出人脸
+            boxes1 = mtcnn.detectFaces(bitmapTemp1, bitmapTemp1.getWidth() / 5); // 只有这句代码检测人脸，下面都是根据Box在图片中裁减出人脸
             long end = System.currentTimeMillis();
             resultTextView.setText("人脸检测前向传播耗时：" + (end - start));
             resultTextView2.setText("");
-            boxes2 = mtcnn.detectFaces(bitmapTemp2, MTCNN.MIN_SIZE); // 只有这句代码检测人脸，下面都是根据Box在图片中裁减出人脸
+            boxes2 = mtcnn.detectFaces(bitmapTemp2, bitmapTemp2.getWidth() / 5); // 只有这句代码检测人脸，下面都是根据Box在图片中裁减出人脸
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -122,8 +122,8 @@ public class MainActivity extends AppCompatActivity {
         // 增加margin
         Rect rect1 = box1.transform2Rect();
         Rect rect2 = box2.transform2Rect();
-        MyUtil.rectExtend(bitmapTemp1, rect1, MTCNN.MARGIN, MTCNN.MARGIN);
-        MyUtil.rectExtend(bitmapTemp1, rect2, MTCNN.MARGIN, MTCNN.MARGIN);
+        MyUtil.rectExtend(bitmapTemp1, rect1);
+        MyUtil.rectExtend(bitmapTemp1, rect2);
 
         // 剪裁人脸
         bitmapCrop1 = MyUtil.crop(bitmapTemp1, rect1);

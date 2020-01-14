@@ -56,6 +56,20 @@ public class MyUtil {
     }
 
     /**
+     * 给rect增加margin
+     * 使用长度不变，宽度增加到和长度一样
+     * @param bitmap
+     * @param rect
+     */
+    public static void rectExtend(Bitmap bitmap, Rect rect) {
+        int width = rect.right - rect.left;
+        int height = rect.bottom - rect.top;
+        int margin = (height - width) / 2;
+        rect.left = max(0, rect.left - margin);
+        rect.right = min(bitmap.getWidth() - 1, rect.right + margin);
+    }
+
+    /**
      * 加载模型文件
      * @param assetManager
      * @param modelPath
