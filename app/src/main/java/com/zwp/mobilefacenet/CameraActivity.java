@@ -100,7 +100,6 @@ public class CameraActivity extends AppCompatActivity {
         holder.setFixedSize(mSize.width, mSize.height);
         parameters.setPreviewSize(mSize.width, mSize.height);
         parameters.setPreviewFormat(IMAGE_FORMAT);
-        parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
         mCamera.setParameters(parameters);
         try {
             mCamera.setPreviewDisplay(holder);
