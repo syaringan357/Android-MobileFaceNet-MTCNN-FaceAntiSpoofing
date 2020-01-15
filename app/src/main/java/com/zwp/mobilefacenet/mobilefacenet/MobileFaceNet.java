@@ -39,7 +39,7 @@ public class MobileFaceNet {
     }
 
     /**
-     * 计算两张图片的相似度
+     * 计算两张图片的相似度，使用l2损失
      * @param embeddings
      * @return
      */

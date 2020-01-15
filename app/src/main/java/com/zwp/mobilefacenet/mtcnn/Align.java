@@ -2,7 +2,6 @@ package com.zwp.mobilefacenet.mtcnn;
 
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
-import android.graphics.Point;
 
 /**
  * 人脸对齐矫正

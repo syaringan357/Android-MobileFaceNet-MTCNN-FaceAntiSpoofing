@@ -199,7 +199,7 @@ public class MyUtil {
     }
 
     /**
-     * l2正则化
+     * l2范数归一化
      * @param embeddings
      * @param epsilon 惩罚项
      * @return
