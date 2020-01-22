@@ -1,6 +1,13 @@
 # MobileFaceNet-Android
-Use tensorflow Lite on Android platform, integrated face detection (MTCNN), face anti spoofing (ECCV2018-FaceDeSpoofing) and face comparison (MobileFaceNet uses InsightFace loss).
-
+This project includes three models.  
+  
+MTCNN(pnet.tflite, rnet.tflite, onet.tflite), input: one Bitmap, output: Box. Use this model to detect faces from an image.  
+  
+FaceAntiSpoofing(FaceAntiSpoofing.tflite), input: one Bitmap, output: float score. Use this model to determine whether the image is an attack.  
+  
+MobileFaceNet(MobileFaceNet.tflite), input: two Bitmaps, output: float score. Use this model to judge whether two face images are one person.  
+  
+# DEPENDING
 https://github.com/vcvycy/MTCNN4Android  
 This project is the Android implementaion of MTCNN face detection.
 
@@ -21,3 +28,9 @@ After putting .tflite in your assets directory, remember to add this code to you
 aaptOptions {  
 　　noCompress "tflite"  
 }  
+  
+# SCREEN SHOT
+<img src="https://github.com/syaringan357/Android-MobileFaceNet-MTCNN-FaceAntiSpoofing/blob/master/ScreenShot/Screen_Shot1.png" width=375/>
+<img src="https://github.com/syaringan357/Android-MobileFaceNet-MTCNN-FaceAntiSpoofing/blob/master/ScreenShot/Screen_Shot2.png" width=375/>
+<img src="https://github.com/syaringan357/Android-MobileFaceNet-MTCNN-FaceAntiSpoofing/blob/master/ScreenShot/Screen_Shot3.png" width=375/>
+<img src="https://github.com/syaringan357/Android-MobileFaceNet-MTCNN-FaceAntiSpoofing/blob/master/ScreenShot/Screen_Shot4.png" width=375/>
