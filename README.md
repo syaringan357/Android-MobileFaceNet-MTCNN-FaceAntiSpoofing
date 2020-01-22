@@ -9,7 +9,7 @@ MobileFaceNet(MobileFaceNet.tflite), input: two Bitmaps, output: float score. Us
 
 iOS platform implementation: https://github.com/syaringan357/iOS-MobileFaceNet-MTCNN-FaceAntiSpoofing
   
-# DEPENDING
+# References
 https://github.com/vcvycy/MTCNN4Android  
 This project is the Android implementaion of MTCNN face detection.
 
