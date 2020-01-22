@@ -23,12 +23,6 @@ public class MTCNN {
     private float rNetThreshold = 0.7f;
     private float oNetThreshold = 0.7f;
 
-    // 建议宽高和最小检测人脸，最小检测人脸这个参数在PNet中决定缩放的次数，所以在自己项目中配置好这个参数将将有助于缩减检测时间
-    public static final int IMAGE_WIDTH = 960;
-    public static final int IMAGE_HEIGHT = 1280;
-    public static final int MIN_SIZE = 120; // 最小人脸尺寸，建议根据自己的图像比例来调节
-    public static final int MARGIN = 80; // 剪裁时扩宽的尺寸，建议根据自己的图像比例来调节
-
     private static final String MODEL_FILE_PNET = "pnet.tflite";
     private static final String MODEL_FILE_RNET = "rnet.tflite";
     private static final String MODEL_FILE_ONET = "onet.tflite";
@@ -51,17 +45,22 @@ public class MTCNN {
      * @param minFaceSize 最小的人脸像素值. (此值越大，检测越快)
      */
     public Vector<Box> detectFaces(Bitmap bitmap, int minFaceSize) {
-        //【1】PNet generate candidate boxes
-        Vector<Box> boxes = pNet(bitmap, minFaceSize);
-        square_limit(boxes, bitmap.getWidth(), bitmap.getHeight());
+        Vector<Box> boxes;
+        try {
+            //【1】PNet generate candidate boxes
+            boxes = pNet(bitmap, minFaceSize);
+            square_limit(boxes, bitmap.getWidth(), bitmap.getHeight());
 
-        //【2】RNet
-        boxes = rNet(bitmap, boxes);
-        square_limit(boxes, bitmap.getWidth(), bitmap.getHeight());
+            //【2】RNet
+            boxes = rNet(bitmap, boxes);
+            square_limit(boxes, bitmap.getWidth(), bitmap.getHeight());
 
-        //【3】ONet
-        boxes = oNet(bitmap, boxes);
-
+            //【3】ONet
+            boxes = oNet(bitmap, boxes);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            boxes = new Vector<>();
+        }
         return boxes;
     }
 
@@ -69,7 +68,7 @@ public class MTCNN {
         // square
         for (int i = 0; i < boxes.size(); i++) {
             boxes.get(i).toSquareShape();
-            boxes.get(i).limit_square(w, h);
+            boxes.get(i).limitSquare(w, h);
         }
     }
 
@@ -107,7 +106,7 @@ public class MTCNN {
 
             // (3)数据解析
             Vector<Box> curBoxes = new Vector<>();
-            generateBoxes(prob1, conv4_2_BiasAdd, scale, pNetThreshold, curBoxes);
+            generateBoxes(prob1, conv4_2_BiasAdd, scale, curBoxes);
 
             // (4)nms 0.5
             nms(curBoxes, 0.5f, "Union");
@@ -151,7 +150,7 @@ public class MTCNN {
         pInterpreter.runForMultipleInputsOutputs(new Object[]{pNetIn}, outputs);
     }
 
-    private int generateBoxes(float[][][][] prob1, float[][][][] conv4_2_BiasAdd, float scale, float threshold, Vector<Box> boxes) {
+    private int generateBoxes(float[][][][] prob1, float[][][][] conv4_2_BiasAdd, float scale, Vector<Box> boxes) {
         int h = prob1[0].length;
         int w = prob1[0][0].length;
 

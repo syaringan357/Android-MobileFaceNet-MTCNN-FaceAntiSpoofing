@@ -96,16 +96,17 @@ public class CameraActivity extends AppCompatActivity {
 
         // 获取合适的分辨率
         mSize = getOptimalSize(parameters.getSupportedPreviewSizes(), mSurfaceView.getWidth(), mSurfaceView.getHeight());
-
-        holder.setFixedSize(mSize.width, mSize.height);
         parameters.setPreviewSize(mSize.width, mSize.height);
+
         parameters.setPreviewFormat(IMAGE_FORMAT);
         mCamera.setParameters(parameters);
+
         try {
             mCamera.setPreviewDisplay(holder);
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
+
         // 相机每一帧图像回调
         mCamera.setPreviewCallback(new Camera.PreviewCallback() {
             @Override
@@ -114,6 +115,7 @@ public class CameraActivity extends AppCompatActivity {
                 camera.addCallbackBuffer(data);
             }
         });
+
         mCamera.startPreview();
     }
 

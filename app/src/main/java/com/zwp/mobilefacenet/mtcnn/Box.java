@@ -86,7 +86,7 @@ public class Box {
     }
 
     // 防止边界溢出，并维持square大小
-    public void limit_square(int w, int h) {
+    public void limitSquare(int w, int h) {
         if (box[0] < 0 || box[1] < 0) {
             int len = max(-box[0], -box[1]);
             box[0] += len;
@@ -97,5 +97,15 @@ public class Box {
             box[2] -= len;
             box[3] -= len;
         }
+    }
+
+    // 坐标是否越界
+    public boolean transbound(int w, int h) {
+        if (box[0] < 0 || box[1] < 0) {
+            return true;
+        } else if (box[2] >= w || box[3] >= h) {
+            return true;
+        }
+        return false;
     }
 }

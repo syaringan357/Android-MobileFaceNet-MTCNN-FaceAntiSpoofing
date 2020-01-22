@@ -97,33 +97,26 @@ public class MainActivity extends AppCompatActivity {
         Bitmap bitmapTemp2 = bitmap2.copy(bitmap1.getConfig(), false);
 
         // 检测出人脸数据
-        Vector<Box> boxes1 = null;
-        Vector<Box> boxes2 = null;
-        // 如果没检测到人脸会抛出异常
-        try {
-            long start = System.currentTimeMillis();
-            boxes1 = mtcnn.detectFaces(bitmapTemp1, bitmapTemp1.getWidth() / 5); // 只有这句代码检测人脸，下面都是根据Box在图片中裁减出人脸
-            long end = System.currentTimeMillis();
-            resultTextView.setText("人脸检测前向传播耗时：" + (end - start));
-            resultTextView2.setText("");
-            boxes2 = mtcnn.detectFaces(bitmapTemp2, bitmapTemp2.getWidth() / 5); // 只有这句代码检测人脸，下面都是根据Box在图片中裁减出人脸
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if (boxes1 == null || boxes2 == null) {
+        long start = System.currentTimeMillis();
+        Vector<Box> boxes1 = mtcnn.detectFaces(bitmapTemp1, bitmapTemp1.getWidth() / 5); // 只有这句代码检测人脸，下面都是根据Box在图片中裁减出人脸
+        long end = System.currentTimeMillis();
+        resultTextView.setText("人脸检测前向传播耗时：" + (end - start));
+        resultTextView2.setText("");
+        Vector<Box> boxes2 = mtcnn.detectFaces(bitmapTemp2, bitmapTemp2.getWidth() / 5); // 只有这句代码检测人脸，下面都是根据Box在图片中裁减出人脸
+        if (boxes1.size() == 0 || boxes2.size() == 0) {
             Toast.makeText(MainActivity.this, "未检测到人脸", Toast.LENGTH_LONG).show();
             return;
         }
+
         // 这里因为使用的每张照片里只有一张人脸，所以取第一个值，用来剪裁人脸
         Box box1 = boxes1.get(0);
         Box box2 = boxes2.get(0);
-
-        // 增加margin
+        box1.toSquareShape();
+        box2.toSquareShape();
+        box1.limitSquare(bitmapTemp1.getWidth(), bitmapTemp1.getHeight());
+        box2.limitSquare(bitmapTemp2.getWidth(), bitmapTemp2.getHeight());
         Rect rect1 = box1.transform2Rect();
         Rect rect2 = box2.transform2Rect();
-        MyUtil.rectExtend(bitmapTemp1, rect1);
-        MyUtil.rectExtend(bitmapTemp1, rect2);
 
         // 剪裁人脸
         bitmapCrop1 = MyUtil.crop(bitmapTemp1, rect1);
