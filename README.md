@@ -6,6 +6,8 @@ MTCNN(pnet.tflite, rnet.tflite, onet.tflite), input: one Bitmap, output: Box. Us
 FaceAntiSpoofing(FaceAntiSpoofing.tflite), input: one Bitmap, output: float score. Use this model to determine whether the image is an attack.  
   
 MobileFaceNet(MobileFaceNet.tflite), input: two Bitmaps, output: float score. Use this model to judge whether two face images are one person.  
+
+iOS platform implementation: https://github.com/syaringan357/iOS-MobileFaceNet-MTCNN-FaceAntiSpoofing
   
 # DEPENDING
 https://github.com/vcvycy/MTCNN4Android  
