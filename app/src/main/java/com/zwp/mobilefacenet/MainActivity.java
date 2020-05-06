@@ -126,7 +126,8 @@ public class MainActivity extends AppCompatActivity {
 //        Utils.drawBox(bitmapTemp1, box1, 10);
 //        Utils.drawBox(bitmapTemp2, box2, 10);
 
-//        bitmapCrop2 = MyUtil.readFromAssets(this, "1.png");
+//        bitmapCrop1 = MyUtil.readFromAssets(this, "42.png");
+//        bitmapCrop2 = MyUtil.readFromAssets(this, "52.png");
         imageViewCrop1.setImageBitmap(bitmapCrop1);
         imageViewCrop2.setImageBitmap(bitmapCrop2);
     }
@@ -140,30 +141,51 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        long start = System.currentTimeMillis();
-        float score1 = fas.antiSpoofing(bitmapCrop1); // 就这一句有用代码，其他都是UI
-        long end = System.currentTimeMillis();
-        float score2 = fas.antiSpoofing(bitmapCrop2); // 就这一句有用代码，其他都是UI
+        // 活体检测前先判断图片清晰度
+        int laplace1 = fas.laplacian(bitmapCrop1);
 
-        String text = "活体检测结果left：" + score1;
-        if (score1 < FaceAntiSpoofing.THRESHOLD) {
-            text = text + "，" + "True";
-            resultTextView.setTextColor(getResources().getColor(android.R.color.holo_green_light));
-        } else {
+        String text = "清晰度检测结果left：" + laplace1;
+        if (laplace1 < FaceAntiSpoofing.LAPLACIAN_THRESHOLD) {
             text = text + "，" + "False";
             resultTextView.setTextColor(getResources().getColor(android.R.color.holo_red_light));
+        } else {
+            long start = System.currentTimeMillis();
+
+            // 活体检测
+            float score1 = fas.antiSpoofing(bitmapCrop1);
+
+            long end = System.currentTimeMillis();
+
+            text = "活体检测结果left：" + score1;
+            if (score1 < FaceAntiSpoofing.THRESHOLD) {
+                text = text + "，" + "True";
+                resultTextView.setTextColor(getResources().getColor(android.R.color.holo_green_light));
+            } else {
+                text = text + "，" + "False";
+                resultTextView.setTextColor(getResources().getColor(android.R.color.holo_red_light));
+            }
+            text = text + "。耗时" + (end - start);
         }
-        text = text + "。耗时" + (end - start);
         resultTextView.setText(text);
 
+        // 第二张图片活体检测前先判断图片清晰度
+        int laplace2 = fas.laplacian(bitmapCrop2);
 
-        String text2 = "活体检测结果right：" + score2;
-        if (score2 < FaceAntiSpoofing.THRESHOLD) {
-            text2 = text2 + "，" + "True";
-            resultTextView2.setTextColor(getResources().getColor(android.R.color.holo_green_light));
-        } else {
+        String text2 = "清晰度检测结果left：" + laplace2;
+        if (laplace2 < FaceAntiSpoofing.LAPLACIAN_THRESHOLD) {
             text2 = text2 + "，" + "False";
             resultTextView2.setTextColor(getResources().getColor(android.R.color.holo_red_light));
+        } else {
+            // 活体检测
+            float score2 = fas.antiSpoofing(bitmapCrop2);
+            text2 = "活体检测结果right：" + score2;
+            if (score2 < FaceAntiSpoofing.THRESHOLD) {
+                text2 = text2 + "，" + "True";
+                resultTextView2.setTextColor(getResources().getColor(android.R.color.holo_green_light));
+            } else {
+                text2 = text2 + "，" + "False";
+                resultTextView2.setTextColor(getResources().getColor(android.R.color.holo_red_light));
+            }
         }
         resultTextView2.setText(text2);
     }

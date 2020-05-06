@@ -216,4 +216,34 @@ public class MyUtil {
             }
         }
     }
+
+    /**
+     * 图片转为灰度图
+     * @param bitmap
+     * @return 灰度图数据
+     */
+    public static int[][] convertGreyImg(Bitmap bitmap) {
+        int w = bitmap.getWidth();
+        int h = bitmap.getHeight();
+
+        int[] pixels = new int[h * w];
+        bitmap.getPixels(pixels, 0, w, 0, 0, w, h);
+
+        int[][] result = new int[h][w];
+        int alpha = 0xFF << 24;
+        for(int i = 0; i < h; i++)	{
+            for(int j = 0; j < w; j++) {
+                int val = pixels[w * i + j];
+
+                int red = ((val >> 16) & 0xFF);
+                int green = ((val >> 8) & 0xFF);
+                int blue = (val & 0xFF);
+
+                int grey = (int)((float) red * 0.3 + (float)green * 0.59 + (float)blue * 0.11);
+                grey = alpha | (grey << 16) | (grey << 8) | grey;
+                result[i][j] = grey;
+            }
+        }
+        return result;
+    }
 }
