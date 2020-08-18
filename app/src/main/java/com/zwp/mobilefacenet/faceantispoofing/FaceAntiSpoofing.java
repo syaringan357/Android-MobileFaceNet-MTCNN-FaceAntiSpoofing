@@ -108,7 +108,7 @@ public class FaceAntiSpoofing {
         // 将人脸resize为256X256大小的，因为下面需要feed数据的placeholder的形状是(1, 256, 256, 3)
         Bitmap bitmapScale = Bitmap.createScaledBitmap(bitmap, INPUT_IMAGE_SIZE, INPUT_IMAGE_SIZE, true);
 
-        double[][] laplace = {{0, 1, 0}, {1, -4, 1}, {0, 1, 0}};
+        int[][] laplace = {{0, 1, 0}, {1, -4, 1}, {0, 1, 0}};
         int size = laplace.length;
         int[][] img = MyUtil.convertGreyImg(bitmapScale);
         int height = img.length;

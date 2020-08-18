@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.zwp.mobilefacenet.faceantispoofing.FaceAntiSpoofing;
 import com.zwp.mobilefacenet.mobilefacenet.MobileFaceNet;
+import com.zwp.mobilefacenet.mtcnn.Align;
 import com.zwp.mobilefacenet.mtcnn.Box;
 import com.zwp.mobilefacenet.mtcnn.MTCNN;
 
@@ -111,6 +112,15 @@ public class MainActivity extends AppCompatActivity {
         // 这里因为使用的每张照片里只有一张人脸，所以取第一个值，用来剪裁人脸
         Box box1 = boxes1.get(0);
         Box box2 = boxes2.get(0);
+
+        // 人脸矫正
+        bitmapTemp1 = Align.face_align(bitmapTemp1, box1.landmark);
+        bitmapTemp2 = Align.face_align(bitmapTemp2, box2.landmark);
+        boxes1 = mtcnn.detectFaces(bitmapTemp1, bitmapTemp1.getWidth() / 5);
+        boxes2 = mtcnn.detectFaces(bitmapTemp2, bitmapTemp2.getWidth() / 5);
+        box1 = boxes1.get(0);
+        box2 = boxes2.get(0);
+
         box1.toSquareShape();
         box2.toSquareShape();
         box1.limitSquare(bitmapTemp1.getWidth(), bitmapTemp1.getHeight());
