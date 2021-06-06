@@ -11,7 +11,7 @@ iOS platform implementation: https://github.com/syaringan357/iOS-MobileFaceNet-M
   
 # References
 https://github.com/vcvycy/MTCNN4Android  
-This project is the Android implementaion of MTCNN face detection.
+This project is the Android implementation of MTCNN face detection.
 
 https://github.com/davidsandberg/facenet  
 Use the MTCNN here to convert .tflite, so that you can adapt to any shape.  
